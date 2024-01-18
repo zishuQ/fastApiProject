@@ -1,0 +1,12 @@
+fastapi~=0.109.0
+uvicorn~=0.26.0
+python-multipart
+pydantic~=2.5.3
+torch
+numpy
+opencv-python
+torchvision
+PyYAML
+matplotlib
+scipy
+tqdm
