@@ -1,6 +1,5 @@
 import os
 import shutil
-import zipfile
 from typing import List
 
 import uvicorn
