@@ -39,24 +39,35 @@ def allowed_file(filename):
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
-    if file and allowed_file(file.filename):
-        src_path = os.path.join(UPLOAD_FOLDER, file.filename)
-        with open(src_path, "wb") as f:
-            f.write(file.file.read())
-        shutil.copy(src_path, "./tmp/ct")
-        image_path = os.path.join("./tmp/ct", file.filename)
-        pid, image_info = core.main.c_main(
-            image_path, app.model, file.filename.rsplit(".", 1)[1]
+    if not (file and allowed_file(file.filename)):
+        response = ImageInfo(
+            status=0,
+            image_url="",
+            draw_url="",
+            image_info={
+                "error": "File type error"
+            }
         )
-        print(pid, image_info)
-        return {
-            "status": 1,
-            "image_url": f"http://{host}:{str(port)}/tmp/ct/{pid}",
-            "draw_url": f"http://{host}:{str(port)}/tmp/draw/{pid}",
-            "image_info": image_info,
-        }
+        return response
 
-    return {"status": 0}
+    src_path = os.path.join(UPLOAD_FOLDER, file.filename)
+    with open(src_path, "wb") as f:
+        f.write(file.file.read())
+    shutil.copy(src_path, "./tmp/ct")
+    image_path = os.path.join("./tmp/ct", file.filename)
+    pid, image_info = core.main.c_main(
+        image_path,
+        app.model,
+        file.filename.rsplit(".", 1)[1]
+    )
+    print(pid, image_info)
+    response = ImageInfo(
+        status=1,
+        image_url=f"http://{host}:{str(port)}/tmp/ct/{pid}",
+        draw_url=f"http://{host}:{str(port)}/tmp/draw/{pid}",
+        image_info=image_info
+    )
+    return response
 
 
 @app.get("/tmp/{file}")
@@ -68,11 +79,12 @@ async def show_photo(file: str):
 
 
 if __name__ == "__main__":
-    host: str = "127.0.0.1"
+    host: str = "localhost"
     port: int = 5003
 
     base_directory: str = "tmp"
-    directories: List[str] = [os.path.join(base_directory, dir_name) for dir_name in ["ct", "draw", "uploads"]]
+    directories: List[str] = [os.path.join(base_directory, dir_name) for dir_name in [
+        "ct", "draw", "uploads"]]
     for directory in directories:
         os.makedirs(directory, exist_ok=True)
 
