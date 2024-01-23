@@ -83,12 +83,15 @@ if __name__ == "__main__":
     port: int = 5003
 
     base_directory: str = "tmp"
-    directories: List[str] = [os.path.join(base_directory, dir_name) for dir_name in [
-        "ct", "draw", "uploads"]]
+    directories: List[str] = [
+        os.path.join(base_directory, dir_name) for dir_name in ["ct", "draw", "uploads"]
+    ]
     for directory in directories:
         os.makedirs(directory, exist_ok=True)
 
     app.mount("/tmp", StaticFiles(directory="./tmp"), name="tmp")
     app.model = Detector()
+    app.model.iou_thres = 0.17
+    app.model.conf_thres = 0.7
 
     uvicorn.run(app, host=host, port=port, log_level="info")

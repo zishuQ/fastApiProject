@@ -11,13 +11,13 @@ class Detector(object):
 
     def __init__(self):
         self.img_size = 640
-        self.threshold = 0.4
         self.max_frame = 160
+        self.iou_thres = 0.1
+        self.conf_thres = 0.1
         self.init_model()
 
     def init_model(self):
 
-        # self.weights = 'weights/final.pt'
         self.weights = 'weights/yolov5.pt'
         self.device = '0' if torch.cuda.is_available() else 'cpu'
         self.device = select_device(self.device)
@@ -61,7 +61,7 @@ class Detector(object):
                 cls_id, 0, fontScale=tl / 3, thickness=tf)[0]
             c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
             cv2.rectangle(image, c1, c2, color, -1, cv2.LINE_AA)  # filled
-            cv2.putText(image, '{} ID-{:.2f}'.format(cls_id, conf), (c1[0], c1[1] - 2), 0, tl / 3,
+            cv2.putText(image, '{} {:.2f}'.format(cls_id, conf), (c1[0], c1[1] - 2), 0, tl / 3,
                         [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
         return image
 
@@ -71,7 +71,14 @@ class Detector(object):
 
         pred = self.m(img, augment=False)[0]
         pred = pred.float()
-        pred = non_max_suppression(pred, self.threshold, 0.3)
+        pred = non_max_suppression(
+            pred,
+            self.conf_thres,
+            self.iou_thres,
+            classes=None,
+            agnostic=False,
+            labels=()
+        )
 
         pred_boxes = []
         image_info = {}
