@@ -97,19 +97,22 @@ async def show_photo(file: str):
     print(image_path)
     return FileResponse(image_path, media_type="image/png")
 
+
 @app.get("/imgInfo/{filename}")
 async def image_process(filename: str):
     filepath = os.path.join(UPLOAD_FOLDER, filename)
-    
     if not (os.path.exists(filepath) and allowed_file(filename)):
-        response = ImageInfo(
-            status=0,
-            image_url="",
-            draw_url="",
-            image_info={
-                "error": "File type error or file not found"
+        response = {
+            "status": 0,
+            "msg": "File type error or file not found",
+            "data": {
+                "image_url": "",
+                "draw_url": "",
+                "image_info": {
+                    "error": "File type error or file not found"
+                }
             }
-        )
+        }
         return response
 
     src_path = os.path.join(UPLOAD_FOLDER, filename)
@@ -122,12 +125,20 @@ async def image_process(filename: str):
     )
     tmp_ct_path = f"tmp/ct/{pid}"
     tmp_draw_path = f"tmp/draw/{pid}"
-    response = ImageInfo(
-        status=1,
+    img_info = ImageInfo(
         image_url=f"http://{str(host)}:{str(port)}/{tmp_ct_path}",
         draw_url=f"http://{str(host)}:{str(port)}/{tmp_draw_path}",
         image_info=image_info
     )
+    response = {
+        "status": 1,
+        "msg": "get image info success",
+        "data": {
+            "image_url": img_info.image_url,
+            "draw_url": img_info.draw_url,
+            "image_info": img_info.image_info
+        }
+    }
     return response
 
 

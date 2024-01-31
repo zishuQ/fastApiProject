@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 
 class ImageInfo(BaseModel):
-    status: int
     image_url: str
     draw_url: str
     image_info: dict

@@ -5,6 +5,7 @@ from utils.general import non_max_suppression, scale_coords, letterbox
 from utils.torch_utils import select_device
 import cv2
 from random import randint
+from collections import Counter
 
 
 class Detector(object):
@@ -50,7 +51,8 @@ class Detector(object):
         tl = line_thickness or round(
             0.002 * (image.shape[0] + image.shape[1]) / 2) + 1  # line/font thickness
         for (x1, y1, x2, y2, cls_id, conf) in bboxes:
-            color = self.colors[self.names.index(cls_id)]
+            # color = self.colors[self.names.index(cls_id)]
+            color = (0, 0, 255)  # Red color
             c1, c2 = (x1, y1), (x2, y2)
             cv2.rectangle(image, c1, c2, color,
                           thickness=tl, lineType=cv2.LINE_AA)
@@ -64,9 +66,7 @@ class Detector(object):
         return image
 
     def detect(self, im):
-
         im0, img = self.preprocess(im)
-
         pred = self.m(img, augment=False)[0]
         pred = pred.float()
         pred = non_max_suppression(
@@ -77,7 +77,6 @@ class Detector(object):
             agnostic=False,
             labels=()
         )
-
         pred_boxes = []
         image_info = {}
         count = 0
@@ -97,5 +96,8 @@ class Detector(object):
                     image_info[key] = ['{}×{}'.format(
                         x2-x1, y2-y1), np.round(float(conf), 3)]
 
+        all_labels = [box[4] for box in pred_boxes]
+        label_counts = Counter(all_labels)
         im = self.plot_bboxes(im, pred_boxes)
+        image_info["label_counts"] = label_counts
         return im, image_info
