@@ -17,7 +17,6 @@ class Detector(object):
         self.init_model()
 
     def init_model(self):
-
         self.weights = 'weights/yolov5.pt'
         self.device = '0' if torch.cuda.is_available() else 'cpu'
         self.device = select_device(self.device)
@@ -34,7 +33,6 @@ class Detector(object):
         ]
 
     def preprocess(self, img):
-
         img0 = img.copy()
         img = letterbox(img, new_shape=self.img_size)[0]
         img = img[:, :, ::-1].transpose(2, 0, 1)
