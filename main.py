@@ -1,6 +1,7 @@
 import os
 import shutil
 from typing import List
+from datetime import datetime
 
 import uvicorn
 from fastapi import FastAPI, File, UploadFile, HTTPException
@@ -11,6 +12,7 @@ from fastapi.staticfiles import StaticFiles
 from processor.AIDetector_pytorch import Detector
 import core.main
 from response.models import ImageInfo, YoloParam, ChooseModel
+from mysqlite.sqlite_option import SqliteOption
 
 app = FastAPI()
 
@@ -80,6 +82,13 @@ async def upload_file(images: List[UploadFile] = File(...)):
         path.append(image.filename)
         with open(file_path, "wb") as f:
             f.write(contents)
+    with SqliteOption() as db:
+        for filename in path:
+            data = {}
+            data['LineNo'] = 1
+            data['TireName'] = filename
+            data['ProduceDate'] = datetime.now()
+            db.merge_tire_info(data)
     return {
         "status": 1,
         "msg": "upload success",
@@ -108,9 +117,7 @@ async def image_process(filename: str):
             "data": {
                 "image_url": "",
                 "draw_url": "",
-                "image_info": {
-                    "error": "File type error or file not found"
-                }
+                "image_info": {}
             }
         }
         return response
@@ -130,6 +137,12 @@ async def image_process(filename: str):
         draw_url=f"http://{str(host)}:{str(port)}/{tmp_draw_path}",
         image_info=image_info
     )
+    with SqliteOption() as db:
+        data = {}
+        data['TireName'] = filename
+        data['Info'] = image_info.get('label_counts')
+        data['DefectDate'] = datetime.now()
+        db.merge_detect_info(data)
     response = {
         "status": 1,
         "msg": "get image info success",
@@ -142,9 +155,31 @@ async def image_process(filename: str):
     return response
 
 
-@app.get("/tireInfo")
-async def tireInfo():
-    pass
+@app.get("/tireInfo/{product_line}")
+async def tireInfo(product_line: str):
+    with SqliteOption() as db:
+        db_data = db.select_detect_info(product_line)
+    sorted_db_data = sorted(
+        db_data, key=lambda x: x[3] if x[3] is not None else datetime.min)
+    tire_list = []
+    for val in sorted_db_data:
+        if val[3] is None:
+            continue
+        tire = {}
+        tire["ProductLine"] = f"{val[0]}号"
+        tire["TireName"] = f"{val[1].split('.')[0]}号"
+        tire["ProduceDate"] = val[2].strftime("%Y-%m-%d %H:%M:%S")
+        tire["DefectDate"] = val[3].strftime("%Y-%m-%d %H:%M:%S")
+        tire["Info"] = val[4]
+        tire_list.append(tire)
+    return {
+        "status": 1,
+        "msg": "get tire info success",
+        "data": {
+            "tireList": tire_list
+        }
+    }
+
 
 if __name__ == "__main__":
     host: str = "localhost"
