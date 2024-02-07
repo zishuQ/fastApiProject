@@ -4,36 +4,37 @@
     <!--logo-->
     <!-- <img src="./icons/LogoSDUST.png" alt="Logo" class="logo" /> -->
 
-    <div id="model-select">
-      <div style="color: #fff; margin: 5px;">设置</div>
-      <el-select v-model="model" placeholder="请选择模型">
-        <el-option v-for="model in modelList" :key="model" :label="model" :value="model" @click="selectModel" />
-      </el-select>
+    <div>
+      <div style="color: #fff; margin: 5px; margin-top: 48px; border-top: 1px solid #858585;">设置</div>
+      <div style="margin: 5px;">
+        <el-select v-model="model" placeholder="请选择模型">
+          <el-option v-for="model in modelList" :key="model" :label="model" :value="model" @click="selectModel" />
+        </el-select>
+      </div>
     </div>
-
     <el-form ref="formData" :model="formData" label-position="left">
       <el-form-item style="margin-top: 5px; marginbot" class="form-item" label="">
         <text style="color: #fff; margin-right: 10px;">文件上传</text>
         <el-upload class="upload-demo" action="http://localhost:5003/upload" :show-file-list="false"
           :before-upload="beforeUpload" :on-success="handleSuccess" multiple>
-          <el-button type="primary" size="small">
+          <el-button class="button" type="primary" size="medium">
             <el-icon>
               <PictureFilled />
             </el-icon>点击上传
           </el-button>
         </el-upload>
       </el-form-item>
-      <div style="background-color: #373737">
+      <div style="background-color: #373737;">
         <el-row class="row-bg" justify="space-evenly">
-          <el-col :span="3">
-            <el-button type="primary" size="small" @click="prevImage">
+          <el-col :span="8">
+            <el-button class="button" type="primary" size="medium" @click="prevImage">
               <el-icon>
                 <ArrowLeftBold />
               </el-icon>上一张
             </el-button>
           </el-col>
           <el-col :span="8">
-            <el-button type="primary" size="small" @click="nextImage">下一张
+            <el-button class="button" type="primary" size="medium" @click="nextImage">下一张
               <el-icon>
                 <ArrowRightBold />
               </el-icon>
@@ -43,7 +44,7 @@
       </div>
     </el-form>
     <!-- IoU滑块和数字输入框 -->
-    <label for="iou">
+    <label for="iou" style="margin-top: 5px;">
       <div class="IoU-text">
         IoU
       </div>
@@ -66,15 +67,17 @@
     <div class="center-container">
       <el-input-number v-model="confidenceRef" :min="0" :max="1" :step="0.01" />
     </div>
+    <statistic class="statistic"></statistic>
     <div>
-      <text style="color: #fff; margin-left: 5px;">
+      <text style="color: #fff; margin-left: 5px; margin-top: 5px;">
         各类病疵统计
       </text>
     </div>
     <div class="bingci">
+      <div style="color: #fff; text-align: center;">{{ path.length == 0 ? '' : path[currentIndex].split('.')[0] + "号轮胎" }}</div>
       <div class="bingci-statistics" v-for="(info, key) in labelCounts" :key="key">
         <div class="statistics">
-          <text>{{ key }}:{{ info }}</text>
+          <text>{{ key }}：{{ info }}</text>
         </div>
       </div>
     </div>
@@ -85,6 +88,7 @@
 import axios from 'axios';
 import { ref, watch } from "vue";
 import eventBus from '@/EventBus';
+import statistic from '@/components/Statistic.vue';
 import { ArrowLeftBold, ArrowRightBold, CameraFilled, PictureFilled, VideoCamera } from "@element-plus/icons-vue";
 
 const data = {
@@ -101,14 +105,15 @@ export default {
     ArrowLeftBold,
     ArrowRightBold,
     VideoCamera,
+    statistic
   },
   computed: {
 
   },
   setup() {
     // 使用 ref 创建响应式数据
-    const iouRef = ref(0.5);
-    const confidenceRef = ref(0.5);
+    const iouRef = ref(0.17);
+    const confidenceRef = ref(0.4);
 
     // 使用 watch 监听 ref 数据的变化
     watch([iouRef, confidenceRef], ([newIou, newConfidence]) => {
@@ -155,12 +160,11 @@ export default {
     axios.get('http://localhost:5003/modelList').then(
       response => {
         this.modelList = response.data.data.modelList
+        this.model = this.modelList[0];
       }
     ).catch(error => {
       console.error('Error fetching models:', error)
     });
-
-
   },
 
   methods: {
@@ -193,7 +197,6 @@ export default {
         this.path.push(item);
       });
       console.log('http://localhost:5003/imgInfo/' + this.path[this.currentIndex]);
-
       axios.get('http://localhost:5003/imgInfo/' + this.path[this.currentIndex]).then(response => {
         this.labelCounts = response.data.data.image_info.label_counts;
         const imgUrls = {
@@ -221,7 +224,6 @@ export default {
       }).catch(error => {
         console.error('Error fetching statistics', error)
       })
-
     },
     nextImage() {
       if (this.currentIndex < this.path.length - 1) {
@@ -254,6 +256,12 @@ export default {
   bottom: 0;
 }
 
+.button {
+  background-color: #373737;
+  border-radius: 0%;
+  border: 1px solid #fff;
+}
+
 .IoU-text {
   color: #fff;
   margin-left: 5px;
@@ -269,6 +277,8 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .slider {
@@ -280,12 +290,24 @@ export default {
   width: 90%;
   height: 58%;
   margin: 8px;
-  border: 1px solid #f2f2f2;
+  border: 1px solid #FFFFFF;
 }
 
 .bingci-statistics {
   background-color: #373737;
   text-align: center;
-  color: #f2f2f2;
+  color: #FFFFFF;
+}
+
+.statistic {
+  background-color: #373737;
+  color: #FFFFFF;
+  display: flex;
+  justify-content: center;
+}
+
+.statistics {
+  text-align: left;
+  margin-left: 5px;
 }
 </style>

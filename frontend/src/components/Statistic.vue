@@ -1,34 +1,34 @@
 <template>
   <div class="Statistic">
-    <!-- 下拉列表选择生产线 -->
     <el-select v-model="selectedProductionLine" placeholder="选择生产线">
-      <el-option v-for="line in productionLines" :key="line.value" :label="line.label" :value="line.value" @click="selectProductionLine"></el-option>
+      <el-option v-for="line in productionLines" :key="line.value" :label="line.label" :value="line.value"
+        @click="selectProductionLine">
+      </el-option>
     </el-select>
-
-    <!-- 轮胎信息表格 -->
-    <el-table :data="tireList">
-      <!-- 表格列配置 -->
-      <el-table-column label="轮胎名称" prop="TireName"></el-table-column>
-      <el-table-column label="生产日期" prop="ProduceDate"></el-table-column>
-      <el-table-column label="检测日期" prop="DefectDate"></el-table-column>
-      <el-table-column label="详细信息">
-        <template #default="{ row }">
-          <div v-if="Object.keys(row.Info).length > 0">
-            <el-table :data="getInfoTableData(row.Info)" style="width: 100%" :show-header="false">
-              <el-table-column prop="prop"></el-table-column>
-              <el-table-column prop="value"></el-table-column>
-            </el-table>
-          </div>
-          <div v-else>无病疵</div>
+    <div>
+      <el-popover placement="right" :width="635" trigger="click">
+        <template #reference>
+          <el-button style="margin-right: 16px; border-radius: 0%; background-color: #373737; color: #fff;"
+            @click="selectProductionLine">查询生产线信息</el-button>
         </template>
-      </el-table-column>
-    </el-table>
-
-    <!-- 轮胎详细信息弹窗 -->
-    <el-dialog v-if="showDetailDialog" title="轮胎详细信息" :visible.sync="showDetailDialog">
-      <!-- 轮胎详细信息内容 -->
-      <!-- 可根据需要展示轮胎详细信息的各个属性 -->
-    </el-dialog>
+        <el-table class="sub-item" :data="tireList">
+          <el-table-column width="100" property="TireName" label="轮胎名称" />
+          <el-table-column width="100" property="ProduceDate" label="生产日期" />
+          <el-table-column width="100" property="DefectDate" label="检测日期" />
+          <el-table-column width="310" property="Info" label="详细信息">
+            <template #default="{ row }">
+              <div v-if="Object.keys(row.Info).length > 0">
+                <el-table :data="getInfoTableData(row.Info)" style="width: 100%" :show-header="false">
+                  <el-table-column prop="prop"></el-table-column>
+                  <el-table-column prop="value"></el-table-column>
+                </el-table>
+              </div>
+              <div v-else>无病疵</div>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-popover>
+    </div>
   </div>
 </template>
 <script>
@@ -43,7 +43,8 @@ export default {
         { label: '生产线2', value: 2 },
       ],
       showDetailDialog: false,
-      tireList : [],
+      tireList: [],
+      dialogVisible: false
     };
   },
   mounted() {
@@ -54,15 +55,15 @@ export default {
       // 将 Info 转换为表格数据格式
       return Object.keys(info).map(prop => ({ prop, value: info[prop] }));
     },
-    selectProductionLine(){
+    selectProductionLine() {
       console.log(this.selectedProductionLine);
-      axios.get('http://localhost:5003/tireInfo/'+this.selectedProductionLine).then(
-          response=>{
-            this.tireList=response.data.data.tireList;
-            console.log(this.tireList);
-          }
-      ).catch(error=>{
-        console.error('Error fetching models:',error)
+      axios.get('http://localhost:5003/tireInfo/' + this.selectedProductionLine).then(
+        response => {
+          this.tireList = response.data.data.tireList;
+          console.log(this.tireList);
+        }
+      ).catch(error => {
+        console.error('Error fetching models:', error)
       });
     }
   },
@@ -70,9 +71,13 @@ export default {
 </script>
 <style>
 .Statistic {
-  height: 300px;
-  width: 100%;
-  overflow: auto;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.sub-item {
+  height: 500px;
+  overflow-y: auto;
 }
 </style>
 
