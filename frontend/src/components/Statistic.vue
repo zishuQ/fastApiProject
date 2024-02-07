@@ -8,9 +8,9 @@
     <!-- 轮胎信息表格 -->
     <el-table :data="tireList">
       <!-- 表格列配置 -->
-      <el-table-column label="TireName" prop="TireName"></el-table-column>
-      <el-table-column label="ProduceDate" prop="ProduceDate"></el-table-column>
-      <el-table-column label="DefectDate" prop="DefectDate"></el-table-column>
+      <el-table-column label="轮胎名称" prop="TireName"></el-table-column>
+      <el-table-column label="生产日期" prop="ProduceDate"></el-table-column>
+      <el-table-column label="检测日期" prop="DefectDate"></el-table-column>
       <el-table-column label="详细信息">
         <template #default="{ row }">
           <div v-if="Object.keys(row.Info).length > 0">
@@ -44,7 +44,6 @@ export default {
       ],
       showDetailDialog: false,
       tireList : [],
-
     };
   },
   mounted() {
@@ -71,9 +70,8 @@ export default {
 </script>
 <style>
 .Statistic {
-  height: 400px;
-  width: 1500px;
-  border: 1px solid #ccc;
+  height: 300px;
+  width: 100%;
   overflow: auto;
 }
 </style>

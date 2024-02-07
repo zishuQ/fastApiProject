@@ -3,34 +3,31 @@
   <div class="right-section">
     <!-- 上方标题 -->
     <div class="title">
-      <h1>轮胎病疵检测系统</h1>
+      <h1>轮胎病疵检测平台</h1>
     </div>
 
-    <el-row :gutter="40"><!-- 下方左侧原始图片展示 -->
-      <el-col :span="10" class="upload-container">
-        <el-image class="image" v-if="currentImageUrl" :src="currentImageUrl" alt="原始图片" fit="cover">
-          原始图片
-        </el-image>
-
-      </el-col>
-
-      <el-col :span="10" class="upload-container">
-        <el-image class="draw" v-if="currentDrawUrl" :src="currentDrawUrl" alt="预测图片" fit="cover">
-          预测图片
-        </el-image>
-
-      </el-col>
-    </el-row>
-
-    <RouterView>
-      <statistic></statistic>
-    </RouterView>
-
+    <!-- 下方左侧原始图片展示 -->
+    <div class="container">
+      <div class="box">
+        原始图片
+        <div class="image-box">
+          <img v-if="currentImageUrl" class="image" :src="currentImageUrl" alt="原始图片" fit="cover" @dblclick="openImg" />
+          <div v-else class="empty-image"></div>
+        </div>
+      </div>
+      <div class="separator"></div>
+      <div class="box">
+        预测图片
+        <div class="image-box">
+          <img v-if="currentDrawUrl" class="image" :src="currentDrawUrl" alt="预测图片" fit="cover" @dblclick="openDraw">
+          <div v-else class="empty-image"></div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-
 import eventBus from '@/EventBus';
 import statistic from '@/components/Statistic.vue';
 export default {
@@ -45,7 +42,6 @@ export default {
   },
   mounted() {
     eventBus.on('imageUploaded', ({ currentImgUrl, currentDrawUrl }) => {
-
       this.setImage(currentImgUrl, currentDrawUrl);
     });
     eventBus.on('prevImage', ({ currentImgUrl, currentDrawUrl }) => {
@@ -59,6 +55,12 @@ export default {
     setImage(currentImgUrl, currentDrawUrl) {
       this.currentDrawUrl = currentDrawUrl;
       this.currentImageUrl = currentImgUrl;
+    },
+    openImg() {
+      window.open(this.currentImageUrl);
+    },
+    openDraw() {
+      window.open(this.currentDrawUrl);
     }
   }
 };
@@ -66,7 +68,7 @@ export default {
 
 <style scoped>
 .right-section {
-  background-color: #222222;
+  background-color: #fff;
   display: block;
   position: absolute;
   left: 15%;
@@ -74,6 +76,39 @@ export default {
   top: 0;
   bottom: 0;
   overflow: auto;
+}
+
+.container {
+  height: 90%;
+  display: flex;
+  justify-content: space-around;
+}
+
+.separator {
+  border-left: 1px solid #D4D4D4;
+  height: 100%;
+  margin: auto;
+  margin-top: 2%;
+}
+
+.box {
+  flex: 1;
+  color: black;
+  text-align: center;
+  font-size: large;
+}
+
+.image-box {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image {
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .upload-container {
@@ -90,7 +125,8 @@ export default {
 }
 
 .title {
-  background-color: #2c3e50;
+  background-color: #373737;
+  border-bottom: 1px solid #ccc;
   top: 0;
   bottom: 95%;
   left: 15%;
@@ -105,7 +141,6 @@ export default {
   left: 0;
   right: 0;
   background-color: rgba(255, 255, 255, 0.8);
-  /* 背景透明度可以根据需要调整 */
   padding: 8px;
   text-align: center;
   font-weight: bold;

@@ -1,7 +1,6 @@
 <script setup>
 import RightPart from "@/components/RightPart.vue";
 import LeftPart from './components/LeftPart.vue'
-
 </script>
 
 <template>
@@ -9,7 +8,7 @@ import LeftPart from './components/LeftPart.vue'
     <div class="grid-container">
       <div class="left part">
         <LeftPart/>
-      </div>>
+      </div>
       <div class="right part">
         <RightPart />
       </div>

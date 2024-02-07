@@ -2,88 +2,82 @@
   <!-- 左侧功能区 -->
   <div class="sidebar">
     <!--logo-->
-    <img src="./icons/LogoSDUST.png" alt="Logo" class="logo" />
+    <!-- <img src="./icons/LogoSDUST.png" alt="Logo" class="logo" /> -->
 
-    <el-select v-model="model" placeholder="请选择模型">
-      <el-option v-for="model in modelList" :key="model" :label="model" :value="model" @click="selectModel" />
-    </el-select>
+    <div id="model-select">
+      <div style="color: #fff; margin: 5px;">设置</div>
+      <el-select v-model="model" placeholder="请选择模型">
+        <el-option v-for="model in modelList" :key="model" :label="model" :value="model" @click="selectModel" />
+      </el-select>
+    </div>
 
-    <!-- 参数设置 -->
     <el-form ref="formData" :model="formData" label-position="left">
-      <!-- 文件上传 -->
-      <el-form-item label="文件上传">
+      <el-form-item style="margin-top: 5px; marginbot" class="form-item" label="">
+        <text style="color: #fff; margin-right: 10px;">文件上传</text>
         <el-upload class="upload-demo" action="http://localhost:5003/upload" :show-file-list="false"
           :before-upload="beforeUpload" :on-success="handleSuccess" multiple>
-          <el-button type="primary" size="small"><el-icon>
+          <el-button type="primary" size="small">
+            <el-icon>
               <PictureFilled />
-            </el-icon>点击上传</el-button>
+            </el-icon>点击上传
+          </el-button>
         </el-upload>
       </el-form-item>
-      <div style="background-color: black">
+      <div style="background-color: #373737">
         <el-row class="row-bg" justify="space-evenly">
-          <el-col :span="3"><el-button type="primary" size="small" @click="prevImage"><el-icon>
+          <el-col :span="3">
+            <el-button type="primary" size="small" @click="prevImage">
+              <el-icon>
                 <ArrowLeftBold />
-              </el-icon>上一张</el-button></el-col>
-
-          <el-col :span="8"><el-button type="primary" size="small" @click="nextImage">下一张<el-icon>
+              </el-icon>上一张
+            </el-button>
+          </el-col>
+          <el-col :span="8">
+            <el-button type="primary" size="small" @click="nextImage">下一张
+              <el-icon>
                 <ArrowRightBold />
-              </el-icon></el-button></el-col>
+              </el-icon>
+            </el-button>
+          </el-col>
         </el-row>
       </div>
-
-
-      <!-- 视频上传 -->
-      <el-form-item label="视频上传">
-        <el-upload class="upload-demo" action="/your/upload" :show-file-list="false" :before-upload="beforeUpload">
-          <el-button type="primary" size="small"><el-icon>
-              <VideoCamera />
-            </el-icon>点击上传</el-button>
-        </el-upload>
-      </el-form-item>
-      <!-- 摄像头实时检测 -->
-      <el-form-item size="default" label="摄像头实时检测">
-        <el-button><el-icon>
-            <CameraFilled />
-          </el-icon>
-        </el-button>
-      </el-form-item>
     </el-form>
-
     <!-- IoU滑块和数字输入框 -->
-    <label for="iou">IoU阈值：</label>
-    <el-slider v-model="iouRef" :min="0" :max="1" :step="0.01" />
-    <el-input-number v-model="iouRef" :min="0" :max="1" :step="0.01" />
-    <br>
+    <label for="iou">
+      <div class="IoU-text">
+        IoU
+      </div>
+    </label>
+    <div class="center-container">
+      <el-slider class="slider" v-model="iouRef" :min="0" :max="1" :step="0.01" />
+    </div>
+    <div class="center-container">
+      <el-input-number class="input-number" v-model="iouRef" :min="0" :max="1" :step="0.01" />
+    </div>
     <!-- 置信度滑块和数字输入框 -->
-    <label for="confidence">置信度阈值：</label>
-    <el-slider v-model="confidenceRef" :min="0" :max="1" :step="0.01" />
-    <el-input-number v-model="confidenceRef" :min="0" :max="1" :step="0.01" />
-
-    <el-form ref="formData" :model="formData" label-width="100px" label-position="top">
-      <!-- 帧间延时滑块和数字输入框 -->
-      <el-form-item label="帧间延时">
-        <el-switch v-model="formData.enableFrameDelay" active-color="#13ce66" inactive-color="#ff4949" active-text="On"
-          inactive-text="Off">
-          {{ formData.enableFrameDelay }}
-        </el-switch>
-        <el-slider v-model="formData.frameDelay" :min="1" :max="20" :step="1" :disabled="!formData.enableFrameDelay" />
-        <el-input-number v-model="formData.frameDelay" :min="1" :max="20" :step="1"
-          :disabled="!formData.enableFrameDelay" />
-      </el-form-item>
-    </el-form>
-
-
-    <div class="el-checkbox">
-      <el-checkbox v-model="autoDetect" label="自动检测" size="small" :checked="autoDetect" />
-      <el-checkbox v-model="warning" label="预警功能" size="small" :checked="warning" />
+    <label for="confidence">
+      <div style="color: #fff;margin-left: 5px;">
+        置信度
+      </div>
+    </label>
+    <div class="center-container">
+      <el-slider class="slider" v-model="confidenceRef" :min="0" :max="1" :step="0.01" />
     </div>
-
-    <!--病疵统计数据-->
-    <div class="bingci-statistics">
-      <!-- 使用 v-for 迭代 image_info 中的病疵信息 -->
-      <el-statistic v-for="(info, key) in labelCounts" :key="key" :title="key" :value="`${info}`" />
+    <div class="center-container">
+      <el-input-number v-model="confidenceRef" :min="0" :max="1" :step="0.01" />
     </div>
-
+    <div>
+      <text style="color: #fff; margin-left: 5px;">
+        各类病疵统计
+      </text>
+    </div>
+    <div class="bingci">
+      <div class="bingci-statistics" v-for="(info, key) in labelCounts" :key="key">
+        <div class="statistics">
+          <text>{{ key }}:{{ info }}</text>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -92,7 +86,6 @@ import axios from 'axios';
 import { ref, watch } from "vue";
 import eventBus from '@/EventBus';
 import { ArrowLeftBold, ArrowRightBold, CameraFilled, PictureFilled, VideoCamera } from "@element-plus/icons-vue";
-
 
 const data = {
   "image_url": "",
@@ -107,7 +100,7 @@ export default {
     PictureFilled,
     ArrowLeftBold,
     ArrowRightBold,
-    VideoCamera
+    VideoCamera,
   },
   computed: {
 
@@ -252,24 +245,46 @@ export default {
 
 <style>
 .sidebar {
-  background-color: #222222;
+  background-color: #373737;
   display: block;
   position: fixed;
   left: 0;
   top: 0;
   right: 85%;
   bottom: 0;
+}
 
+.IoU-text {
+  color: #fff;
+  margin-left: 5px;
 }
 
 .logo {
   max-width: 100%;
   height: auto;
-  background-color: #181818;
+  background-color: #373737;
+}
+
+.center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slider {
+  width: 90%;
+  margin: 5px;
+}
+
+.bingci {
+  width: 90%;
+  height: 58%;
+  margin: 8px;
+  border: 1px solid #f2f2f2;
 }
 
 .bingci-statistics {
-  background-color: #181818;
+  background-color: #373737;
   text-align: center;
   color: #f2f2f2;
 }
