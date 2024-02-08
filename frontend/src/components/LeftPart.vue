@@ -203,7 +203,6 @@ export default {
           currentImgUrl: response.data.data.image_url,
           currentDrawUrl: response.data.data.draw_url,
         };
-
         eventBus.emit('imageUploaded', imgUrls);
         console.log(imgUrls);
       }).catch(error => {
