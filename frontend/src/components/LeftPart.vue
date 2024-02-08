@@ -107,13 +107,10 @@ export default {
     VideoCamera,
     statistic
   },
-  computed: {
-
-  },
   setup() {
     // 使用 ref 创建响应式数据
     const iouRef = ref(0.17);
-    const confidenceRef = ref(0.4);
+    const confidenceRef = ref(0.2);
 
     // 使用 watch 监听 ref 数据的变化
     watch([iouRef, confidenceRef], ([newIou, newConfidence]) => {
@@ -153,6 +150,7 @@ export default {
       responseData: null,
       path: [],       // 存储所有上传的图片地址
       currentIndex: 0,  // 当前显示图片的索引
+      labelCounts: []
     };
   },
 
